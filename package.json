@@ -1,0 +1,20 @@
+{
+  "name": "sql-backup",
+  "version": "1.0.0",
+  "description": "数据库备份模块",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "author": "iForday",
+  "license": "ISC",
+  "dependencies": {
+    "ali-oss": "^6.8.0",
+    "colors": "^1.4.0",
+    "fs-extra": "^9.0.0",
+    "make-dir": "^3.1.0",
+    "moment": "^2.26.0",
+    "mysql2": "^2.1.0",
+    "node-cron": "^2.0.3"
+  }
+}
