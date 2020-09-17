@@ -8,6 +8,10 @@ const moment = require('moment');
 const path = require('path');
 const fs = require('fs');
 const fsPromise = fs.promises;
+const rimraf = require('rimraf');
+const util = require('util');
+const promisify = util.promisify;
+const rimrafSync = promisify(rimraf);
 
 module.exports = class {
     static async backupMysql() {
@@ -50,7 +54,7 @@ module.exports = class {
         const localPath = path.resolve(`${__dirname}/../${absolutePath}`);
         const isFileExist = await fs.existsSync(localPath);
         if (isFileExist) {
-            await fsPromise.unlink(localPath);
+            await rimrafSync(localPath);
             log.info(`删除过期本地备份[${localPath}]完成`);
         }
         await oss.deleteFolder(absolutePath);

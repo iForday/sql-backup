@@ -1,10 +1,14 @@
-// const log = require('./log');
+const log = require('./log');
 const fs = require('fs');
 const spawn = require('child_process').spawn;
 const path = require('path');
 const moment = require('moment');
 const makeDir = require('make-dir');
 const config = require('../config');
+const rimraf = require('rimraf');
+const util = require('util');
+const promisify = util.promisify;
+const rimrafSync = promisify(rimraf);
 
 module.exports = class {
     constructor(host, port) {
@@ -40,11 +44,13 @@ module.exports = class {
                     absolutePath: `${absolutePath}/${database}.gz`
                 });
             });
-            this.mongodump.stdout.on('error', (e) => {
-                reject(e.toString());
-                fs.unlink(fileDir, () => {
-
-                });
+            this.mongodump.stdout.on('error', async (e) => {
+                try {
+                    reject(e.toString());
+                    await rimrafSync(fileDir);
+                } catch (_err) {
+                    log.error(_err);
+                }
             });
             this.mongodump.stdout.on('close', () => {
                 resolve({
@@ -52,13 +58,15 @@ module.exports = class {
                     absolutePath: `${absolutePath}/${database}.gz`
                 });
             });
-            this.mongodump.stderr.on('data', (data) => {
-                let msg = data.toString();
-                if (msg.indexOf('Failed:') != -1 || msg.indexOf('error') != -1) {
-                    reject(msg);
-                    fs.unlink(fileDir, () => {
-
-                    });
+            this.mongodump.stderr.on('data', async (data) => {
+                try {
+                    let msg = data.toString();
+                    if (msg.indexOf('Failed:') != -1 || msg.indexOf('error') != -1) {
+                        reject(msg);
+                        await rimrafSync(fileDir);
+                    }
+                } catch (_err) {
+                    log.error(_err);
                 }
             });
         });

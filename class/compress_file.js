@@ -2,6 +2,10 @@ const fs = require('fs');
 const fsPromise = fs.promises;
 const path = require('path');
 const zlib = require('zlib');
+const rimraf = require('rimraf');
+const util = require('util');
+const promisify = util.promisify;
+const rimrafSync = promisify(rimraf);
 
 module.exports = class {
     constructor(filePath) {
@@ -32,12 +36,12 @@ module.exports = class {
                         absolutePath: `${this.filePath.absolutePath}.gz`
                     });
                     if (deleteOld) {
-                        await fsPromise.unlink(this.filePath.localPath);
+                        await rimrafSync(this.filePath.localPath);
                     }
                 });
             } catch (e) {
                 if (fs.existsSync(resultPath)) {
-                    await fsPromise.unlink(resultPath);
+                    await rimrafSync(resultPath);
                 }
                 reject(e);
             }
