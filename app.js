@@ -16,7 +16,7 @@ cron.schedule('15 * * * *', async () => {
         await AutoTasks.deleteBackup();
         let end_at = new Date().getTime();
         let used_time = Math.round((end_at - start_at) / 1000 * 100) / 100;
-        log.info(`备份$ {taskId} 执行完成, 用时 ${used_time} 秒`);
+        log.info(`备份 ${taskId} 执行完成, 用时 ${used_time} 秒`);
     } catch (e) {
         log.error(e);
     }
