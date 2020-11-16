@@ -58,6 +58,11 @@ module.exports = class {
             log.info(`删除过期本地备份[${localPath}]完成`);
         }
         await oss.deleteFolder(absolutePath);
+        if (parseInt(moment().subtract(4, 'days').utcOffset(8).format('HH')) == 23) {
+            let rootPath = `backup/${config.common.prefix}/${moment().subtract(4, 'days').utcOffset(8).format('YYYY-MM-DD')}`;
+            rootPath = path.resolve(`${__dirname}/../${rootPath}`);
+            await rimrafSync(rootPath);
+        }
         log.info(`删除过期OSS备份[${absolutePath}]完成`);
     }
 }
